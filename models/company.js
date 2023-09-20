@@ -51,7 +51,8 @@ class Company {
     return company;
   }
 
-  /** Find all companies.
+  /** Find all companies with optional filtering from querystring.
+   *
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
