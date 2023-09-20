@@ -56,36 +56,22 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll(queryParams) {
+  static async findAll(queryString) {
+    let whereClauseObj;
 
-    console.log("QUERY PARAMS", queryParams);
-    let companiesRes;
-
-    if (queryParams !== undefined) {
-      const whereClause = sqlForWhereFilter(queryParams);
-
-      const querySql = `
-      SELECT handle,
-             name,
-             description,
-             num_employees AS "numEmployees",
-             logo_url      AS "logoUrl"
-      FROM companies
-      WHERE $1
-      ORDER BY name`;
-
-      companiesRes = await db.query(querySql, [whereClause]);
+    if (queryString?.nameLike || queryString?.minEmployees || queryString?.maxEmployees) {
+      whereClauseObj = Company.sqlForWhereFilter(queryString);
     }
-    else {
-      companiesRes = await db.query(`
+
+    const companiesRes = await db.query(`
         SELECT handle,
                name,
                description,
                num_employees AS "numEmployees",
                logo_url      AS "logoUrl"
         FROM companies
-        ORDER BY name`);
-    }
+        ${whereClauseObj?.filterCols || ''}
+        ORDER BY name`, whereClauseObj?.values);
 
     return companiesRes.rows;
   }
@@ -169,7 +155,39 @@ class Company {
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
   }
+
+
+  /** sqlForWhereFilter: input could include: {nameLike, minEmployees, maxEmployees}
+ *
+ * Returns {filterCols: "name ILIKE '%'||$1||'%' AND num_employees >= $2",
+ *          values: ["bob", 10]}
+  */
+
+  static sqlForWhereFilter(queryString) {
+    if (queryString.minEmployees > queryString.maxEmployees) {
+      throw new BadRequestError("minEmployees cannot be greater than maxEmployees");
+    }
+
+    const keys = Object.keys(queryString);
+
+    const cols = keys.map((filter, idx) => {
+      if (filter === 'nameLike') {
+        return `name ILIKE '%' || $${idx + 1} || '%'`;
+      } else if (filter === 'minEmployees') {
+        return `num_employees >= $${idx + 1}`;
+      } else if (filter === 'maxEmployees') {
+        return `num_employees <= $${idx + 1}`;
+      }
+    });
+
+    return {
+      filterCols: "WHERE " + cols.join(" AND "),
+      values: Object.values(queryString)
+    };
+  }
 }
+
+
 
 
 module.exports = Company;

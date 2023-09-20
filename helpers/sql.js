@@ -31,31 +31,4 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
 
 
-/** sqlForWhereFilter: input could include: {nameLike, minEmployees, maxEmployees}
- *
- * Returns SQL for a WHERE clause "name ILIKE %bob% AND num_employees >= 10"
-  */
-
-function sqlForWhereFilter(params) {
-  const clauses = [];
-
-  if (params.minEmployees > params.maxEmployees) {
-    throw new BadRequestError("minEmployees cannot be greater than maxEmployees");
-  }
-
-  for (const key in params) {
-    if (key === "nameLike") {
-      clauses.push(`name ILIKE '%${params[key]}%'`);
-    } else if (key === "minEmployees") {
-      clauses.push(`num_employees >= ${params[key]}`);
-    } else if (key === "maxEmployees") {
-      clauses.push(`num_employees <= ${params[key]}`);
-    } else {
-      throw new BadRequestError("Invalid filtering fields");
-    }
-  }
-
-  return clauses.join(' AND ')
-}
-
-module.exports = { sqlForPartialUpdate, sqlForWhereFilter };
+module.exports = { sqlForPartialUpdate };
