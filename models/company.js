@@ -55,8 +55,12 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll() {
-    const companiesRes = await db.query(`
+  static async findAll(queryParams) {
+  let companiesRes;
+  const whereParams = helper(queryParams);
+
+  if(queryParams){
+    companiesRes = await db.query(`
         SELECT handle,
                name,
                description,
@@ -64,8 +68,19 @@ class Company {
                logo_url      AS "logoUrl"
         FROM companies
         ORDER BY name`);
-    return companiesRes.rows;
   }
+  else {
+    companiesRes = await db.query(`
+        SELECT handle,
+               name,
+               description,
+               num_employees AS "numEmployees",
+               logo_url      AS "logoUrl"
+        FROM companies
+        ORDER BY name`);
+      }
+      return companiesRes.rows;
+}
 
   /** Given a company handle, return data about company.
    *

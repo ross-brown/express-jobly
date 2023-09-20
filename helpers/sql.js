@@ -29,4 +29,19 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
+function whereHelper(params){
+  const clauses = [];
+
+  if(params.minEmployees > params.maxEmployees){
+    throw new BadRequestError("minEmployees cannot be greater than maxEmployees")
+  }
+
+  for(const key in params){
+    if (key === "nameLike"){
+      clauses.push(`name = ilike %${params[key]}%`)
+    }
+    else if (key)
+  }
+}
+
 module.exports = { sqlForPartialUpdate };
