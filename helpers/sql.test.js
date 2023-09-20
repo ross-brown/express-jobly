@@ -1,6 +1,6 @@
 "use strict";
 
-const { sqlForPartialUpdate } = require("./sql");
+const { sqlForPartialUpdate, sqlForWhereFilter } = require("./sql");
 
 
 describe("sqlForPartialUpdate", function () {
@@ -16,5 +16,15 @@ describe("sqlForPartialUpdate", function () {
 
   test("no data sent", function () {
     expect(() => sqlForPartialUpdate({}, {})).toThrow("No data");
+  });
+});
+
+
+
+describe("sqlForWhereFilter", function () {
+  test("valid input", function () {
+    const result = sqlForWhereFilter({ nameLike: "test", maxEmployees: 1000 });
+
+    expect(result).toEqual('name ILIKE \'%test%\' AND num_employees <= 1000');
   });
 });

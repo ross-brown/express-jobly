@@ -20,7 +20,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
   // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
   const cols = keys.map((colName, idx) =>
-      `"${jsToSql[colName] || colName}"=$${idx + 1}`,
+    `"${jsToSql[colName] || colName}"=$${idx + 1}`,
   );
 
   return {
@@ -29,19 +29,33 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-function whereHelper(params){
+
+
+/** sqlForWhereFilter: input could include: {nameLike, minEmployees, maxEmployees}
+ *
+ * Returns SQL for a WHERE clause "name ILIKE %bob% AND num_employees >= 10"
+  */
+
+function sqlForWhereFilter(params) {
   const clauses = [];
 
-  if(params.minEmployees > params.maxEmployees){
-    throw new BadRequestError("minEmployees cannot be greater than maxEmployees")
+  if (params.minEmployees > params.maxEmployees) {
+    throw new BadRequestError("minEmployees cannot be greater than maxEmployees");
   }
 
-  for(const key in params){
-    if (key === "nameLike"){
-      clauses.push(`name = ilike %${params[key]}%`)
+  for (const key in params) {
+    if (key === "nameLike") {
+      clauses.push(`name ILIKE '%${params[key]}%'`);
+    } else if (key === "minEmployees") {
+      clauses.push(`num_employees >= ${params[key]}`);
+    } else if (key === "maxEmployees") {
+      clauses.push(`num_employees <= ${params[key]}`);
+    } else {
+      throw new BadRequestError("Invalid filtering fields");
     }
-    else if (key)
   }
+
+  return clauses.join(' AND ')
 }
 
-module.exports = { sqlForPartialUpdate };
+module.exports = { sqlForPartialUpdate, sqlForWhereFilter };
