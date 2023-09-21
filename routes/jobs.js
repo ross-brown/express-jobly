@@ -36,7 +36,22 @@ router.post("/", ensureIsAdmin, async function (req, res, next) {
   return res.status(201).json({ job });
 });
 
+/** GET /  =>
+ *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
+ *
+ * Can filter on provided search filters:
+ * - minEmployees
+ * - maxEmployees
+ * - nameLike (will find case-insensitive, partial matches)
+ *
+ * Authorization required: none
+ */
 
+router.get("/", async function(req,res,next){
+  const jobs = await Job.findAll();
+
+  return res.json({jobs});
+})
 
 
 

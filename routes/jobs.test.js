@@ -37,7 +37,7 @@ describe("POST /jobs", function () {
       .set("authorization", `Bearer ${u2AdminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({job: {
-      id: expect.any(Number), // we have ALTER SEQUENCE but not working...
+      id: 4,
       title: "test title",
       salary: 100000,
       equity: "0.09",
@@ -57,3 +57,38 @@ describe("POST /jobs", function () {
   });
 
 });
+
+/************************************** GET /companies */
+
+describe("GET /jobs", function (){
+
+  test("ok for get all jobs", async function(){
+    const resp = await request(app).get("/jobs");
+
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body).toEqual({jobs : [
+      {
+        id: 1,
+        title: "j1",
+        salary: 100000,
+        equity: "0.5",
+        companyHandle: "c1",
+      },
+      {
+        id: 2,
+        title: "j2",
+        salary: 50000,
+        equity: "0.75",
+        companyHandle: "c2",
+      },
+      {
+        id: 3,
+        title: "j3",
+        salary: 25000,
+        equity: "0.9",
+        companyHandle: "c3",
+      },
+    ]});
+
+  })
+})

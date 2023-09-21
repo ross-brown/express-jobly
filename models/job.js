@@ -56,7 +56,6 @@ class Job {
                company_handle AS "companyHandle"
         FROM jobs
         ORDER BY title`);
-
     return jobsRes.rows;
   }
 
