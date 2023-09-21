@@ -15,6 +15,7 @@ beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
+
 /************************************** create */
 
 describe("create", function () {
@@ -140,14 +141,14 @@ describe("get", function () {
       id: 1,
       title: "j1",
       salary: 100000,
-      equity: 0,
-      company_handle: "c1",
+      equity: "0",
+      companyHandle: "c1",
     });
   });
 
   test("not found if no such job", async function () {
     try {
-      await Job.get("nope");
+      await Job.get(-159);
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -168,8 +169,10 @@ describe("update", function () {
     let job = await Job.update(1, updateData);
     expect(job).toEqual({
       id: 1,
-      ...updateData,
-      company_handle: 'c1'
+      title: "new title",
+      salary: 10,
+      equity: "0.75",
+      companyHandle: 'c1'
     });
 
     const result = await db.query(
@@ -180,7 +183,7 @@ describe("update", function () {
       id: 1,
       title: "new title",
       salary: 10,
-      equity: 0.75,
+      equity: "0.75",
       company_handle: "c1",
     }]);
   });
@@ -196,7 +199,7 @@ describe("update", function () {
     expect(job).toEqual({
       id: 1,
       ...updateDataSetNulls,
-      company_handle: 'c1'
+      companyHandle: 'c1'
     });
 
     const result = await db.query(
@@ -214,7 +217,7 @@ describe("update", function () {
 
   test("not found if no such company", async function () {
     try {
-      await Job.update("nope", updateData);
+      await Job.update(-159, updateData);
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -243,7 +246,7 @@ describe("remove", function () {
 
   test("not found if no such company", async function () {
     try {
-      await Job.remove("nope");
+      await Job.remove(-159);
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();

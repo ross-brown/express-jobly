@@ -11,6 +11,8 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM companies");
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM users");
+  await db.query(`ALTER SEQUENCE
+  jobs_id_seq RESTART WITH 1;`);
 
   await db.query(`
       INSERT INTO companies(handle, name, num_employees, description, logo_url)
