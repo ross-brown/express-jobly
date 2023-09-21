@@ -47,7 +47,15 @@ class Job {
    * Returns [{ id, title, salary, equity, company_handle }, ...]
    * */
 
-  static async findAll() {
+  static async findAll(queryString) {
+    let whereClauseObj;
+
+    if (queryString?.title || queryString?.minSalary || queryString?.hasEquity) {
+      whereClauseObj = Job.sqlForWhereFilter(queryString);
+    }
+
+    console.log("WHERE CLAUSE", whereClauseObj);
+
     const jobsRes = await db.query(`
         SELECT id,
                title,
@@ -55,7 +63,9 @@ class Job {
                equity,
                company_handle AS "companyHandle"
         FROM jobs
-        ORDER BY title`);
+        ${whereClauseObj?.filterCols || ''}
+        ORDER BY title`, whereClauseObj?.values);
+
     return jobsRes.rows;
   }
 
@@ -135,6 +145,35 @@ class Job {
     const job = result.rows[0];
 
     if (!job) throw new NotFoundError(`No job: ${id}`);
+  }
+
+
+  /** sqlForWhereFilter: input could include: {title, minSalary, hasEquity}
+   *
+   * Returns {filterCols, values}
+   */
+
+  static sqlForWhereFilter(queryString) {
+    const keys = Object.keys(queryString)
+    const cols = [];
+    const values = [];
+
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] === 'title') {
+        values.push(queryString[keys[i]]);
+        cols.push(`title ILIKE '%' || $${values.length} || '%'`);
+      } else if (keys[i] === 'minSalary') {
+        values.push(queryString[keys[i]]);
+        cols.push(`salary >= $${values.length}`);
+      } else if (keys[i] === 'hasEquity' && queryString[keys[i]] === true) {
+        cols.push(`equity IS NOT NULL`);
+      }
+    }
+
+    return {
+      filterCols: "WHERE " + cols.join(" AND "),
+      values
+    };
   }
 }
 

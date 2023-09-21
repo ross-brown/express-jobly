@@ -60,7 +60,7 @@ describe("POST /jobs", function () {
 
 });
 
-/************************************** GET /companies */
+/************************************** GET /jobs */
 
 describe("GET /jobs", function () {
 
@@ -88,72 +88,110 @@ describe("GET /jobs", function () {
           id: 3,
           title: "j3",
           salary: 25000,
-          equity: "0.9",
+          equity: null,
           companyHandle: "c3",
         },
       ]
     });
 
   });
+
+  test("test query string filter works ok", async function () {
+    const resp = await request(app).get("/jobs").query({
+      title: "j",
+      minSalary: 50000,
+      hasEquity: true
+    });
+    expect(resp.body).toEqual({
+      jobs:
+        [{
+          companyHandle: "c1",
+          equity: "0.5",
+          id: 1,
+          salary: 100000,
+          title: "j1",
+        },
+        {
+          companyHandle: "c2",
+          equity: "0.75",
+          id: 2,
+          salary: 50000,
+          title: "j2",
+        }
+        ],
+    });
+  });
+
+
+  test("test query string filter works with false hasEquity", async function () {
+    const resp = await request(app).get("/jobs").query({
+      title: "j",
+      minSalary: 10000,
+      hasEquity: false
+    });
+    expect(resp.body).toEqual({
+      jobs:
+        [{
+          companyHandle: "c1",
+          equity: "0.5",
+          id: 1,
+          salary: 100000,
+          title: "j1",
+        },
+        {
+          companyHandle: "c2",
+          equity: "0.75",
+          id: 2,
+          salary: 50000,
+          title: "j2",
+        },
+        {
+          title: "j3",
+          salary: 25000,
+          id: 3,
+          equity: null,
+          companyHandle: "c3"
+        }
+        ],
+    });
+  });
+
 });
 
-// test("test query string filter works ok", async function () {
-//   const resp = await request(app).get("/companies").query({
-//     nameLike: "c",
-//     minEmployees: 1,
-//     maxEmployees: 2
-//   });
-//   expect(resp.body).toEqual({
-//     companies:
-//       [
-//         {
-//           handle: "c1",
-//           name: "C1",
-//           description: "Desc1",
-//           numEmployees: 1,
-//           logoUrl: "http://c1.img",
-//         },
-//         {
-//           handle: "c2",
-//           name: "C2",
-//           description: "Desc2",
-//           numEmployees: 2,
-//           logoUrl: "http://c2.img",
-//         }
-//       ],
-//   });
-// });
 
-// test("test query string incorrect keys", async function () {
-//   const resp = await request(app).get("/companies").query({
-//     username: "c",
-//     numScoops: 1,
-//     maxEmployees: 2
-//   });
-//   expect(resp.body).toEqual({
-//     "error": {
-//       "message": [
-//         "instance is not allowed to have the additional property \"username\"",
-//         "instance is not allowed to have the additional property \"numScoops\"",
-//       ],
-//       "status": 400,
-//     }
-//   });
-// });
 
-// test("test query string min > max", async function () {
-//   const resp = await request(app).get("/companies").query({
-//     nameLike: "c",
-//     minEmployees: 3,
-//     maxEmployees: 2
-//   });
-//   expect(resp.body).toEqual({
-//     "error": {
-//       "message": "minEmployees cannot be greater than maxEmployees",
-//       "status": 400,
-//     },
-//   });
-// });
+test("test query string incorrect keys", async function () {
+  const resp = await request(app).get("/jobs").query({
+    username: "c",
+    numScoops: 1,
+    minSalary: 10000
+  });
+  expect(resp.body).toEqual({
+    "error": {
+      "message": [
+        "instance is not allowed to have the additional property \"username\"",
+        "instance is not allowed to have the additional property \"numScoops\"",
+      ],
+      "status": 400,
+    }
+  });
+});
+
+test("test query string invalid data types", async function () {
+  const resp = await request(app).get("/jobs").query({
+    minSalary: true,
+    hasEquity: "nope"
+  });
+  expect(resp.body).toEqual({
+    "error": {
+      "message": [
+        "instance.minSalary is not of a type(s) integer",
+        "instance.hasEquity is not of a type(s) boolean",
+      ],
+      "status": 400,
+    }
+  });
+});
 
 
 /************************************** GET /jobs/:id */
