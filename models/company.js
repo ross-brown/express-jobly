@@ -168,8 +168,6 @@ class Company {
   */
 
   static sqlForWhereFilter(queryString) {
-
-
     const keys = Object.keys(queryString);
 
     const cols = keys.map((filter, idx) => {
@@ -180,8 +178,6 @@ class Company {
       } else if (filter === 'maxEmployees') {
         return `num_employees <= $${idx + 1}`;
       }
-      // Colt had empty array for where, separate array for values added at the end
-      // use length of values array to generate $'s
     });
 
     return {
@@ -190,8 +186,6 @@ class Company {
     };
   }
 }
-
-
 
 
 module.exports = Company;

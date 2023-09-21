@@ -107,29 +107,32 @@ describe("findAll", function () {
   });
 
   test("test query string min > max", async function () {
-    // const resp = await Company.findAll({
-    //   nameLike: "c",
-    //   minEmployees: 3,
-    //   maxEmployees: 2
-    // });
     expect(async () => await Company.findAll({
       nameLike: "c",
       minEmployees: 3,
       maxEmployees: 2
-    })).rejects.toThrow()
-    // expect(resp.body).toEqual({
-    //   "error": {
-    //     "message": "minEmployees cannot be greater than maxEmployees",
-    //     "status": 400,
-    //   },
-    // });
+    })).rejects.toThrow();
   });
 
-// no criteria passed
-// every option is supplied
-// min / max together
-
-
+  test("works: with all filters", async function () {
+    const companies = await Company.findAll({ nameLike: "c", minEmployees: 2, maxEmployees: 3 });
+    expect(companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  });
 });
 
 /************************************** get */
@@ -249,5 +252,25 @@ describe("remove", function () {
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
     }
+  });
+});
+
+
+
+/*************************************** sqlForWhereFilter */
+
+describe("sqlForWhereFilter", function () {
+  test("works", function () {
+    const { filterCols, values } = Company.sqlForWhereFilter(
+      { nameLike: "test", minEmployees: 1, maxEmployees: 3 });
+    expect(filterCols)
+      .toEqual("WHERE name ILIKE '%' || $1 || '%' AND num_employees >= $2 AND num_employees <= $3");
+    expect(values).toEqual(["test", 1, 3]);
+  });
+
+  test("works: only one filter", function () {
+    const { filterCols, values } = Company.sqlForWhereFilter({ nameLike: "test!" });
+    expect(filterCols).toEqual("WHERE name ILIKE '%' || $1 || '%'");
+    expect(values).toEqual(["test!"]);
   });
 });
