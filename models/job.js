@@ -14,7 +14,7 @@ class Job {
    *
    * Returns { id, title, salary, equity, company_handle }
    *
-   * //TODO: think about errors??
+   * //Think: think about errors??
    * */
 
   static async create({ title, salary, equity, companyHandle }) {
@@ -122,9 +122,9 @@ class Job {
     return job;
   }
 
-  /** Delete given company from database; returns undefined.
+  /** Delete given job from database; returns undefined.
    *
-   * Throws NotFoundError if company not found.
+   * Throws NotFoundError if job not found.
    **/
 
   static async remove(id) {
@@ -137,7 +137,6 @@ class Job {
 
     if (!job) throw new NotFoundError(`No job: ${id}`);
   }
-
 }
 
 
