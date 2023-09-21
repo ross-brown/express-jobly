@@ -62,8 +62,8 @@ describe("POST /companies", function () {
         handle: "new",
         numEmployees: 10,
       })
-      .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(401);
+      .set("authorization", `Bearer ${u2AdminToken}`);
+    expect(resp.statusCode).toEqual(400);
   });
 
   test("bad request with invalid data", async function () {
@@ -73,8 +73,8 @@ describe("POST /companies", function () {
         ...newCompany,
         logoUrl: "not-a-url",
       })
-      .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(401);
+      .set("authorization", `Bearer ${u2AdminToken}`);
+    expect(resp.statusCode).toEqual(400);
   });
 });
 
@@ -229,7 +229,7 @@ describe("PATCH /companies/:handle", function () {
     });
   });
 
-  test("unauth for anon", async function () {
+  test("unauth for non-admin user", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -239,7 +239,7 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("unauth for non-admin user", async function () {
+  test("unauth for anon", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -268,11 +268,31 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request on invalid data", async function () {
+  test("bad request on invalid url", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
         logoUrl: "not-a-url",
+      })
+      .set("authorization", `Bearer ${u2AdminToken}`);
+    expect(resp.statusCode).toEqual(400);
+  });
+
+  test("bad request on invalid numEmployees data type", async function () {
+    const resp = await request(app)
+      .patch(`/companies/c1`)
+      .send({
+        numEmployees: "not-a-url",
+      })
+      .set("authorization", `Bearer ${u2AdminToken}`);
+    expect(resp.statusCode).toEqual(400);
+  });
+
+  test("bad request on invalid company property", async function () {
+    const resp = await request(app)
+      .patch(`/companies/c1`)
+      .send({
+        numScoops: 1,
       })
       .set("authorization", `Bearer ${u2AdminToken}`);
     expect(resp.statusCode).toEqual(400);
