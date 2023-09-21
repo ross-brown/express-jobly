@@ -92,3 +92,84 @@ describe("GET /jobs", function (){
 
   })
 })
+
+// test("test query string filter works ok", async function () {
+//   const resp = await request(app).get("/companies").query({
+//     nameLike: "c",
+//     minEmployees: 1,
+//     maxEmployees: 2
+//   });
+//   expect(resp.body).toEqual({
+//     companies:
+//       [
+//         {
+//           handle: "c1",
+//           name: "C1",
+//           description: "Desc1",
+//           numEmployees: 1,
+//           logoUrl: "http://c1.img",
+//         },
+//         {
+//           handle: "c2",
+//           name: "C2",
+//           description: "Desc2",
+//           numEmployees: 2,
+//           logoUrl: "http://c2.img",
+//         }
+//       ],
+//   });
+// });
+
+// test("test query string incorrect keys", async function () {
+//   const resp = await request(app).get("/companies").query({
+//     username: "c",
+//     numScoops: 1,
+//     maxEmployees: 2
+//   });
+//   expect(resp.body).toEqual({
+//     "error": {
+//       "message": [
+//         "instance is not allowed to have the additional property \"username\"",
+//         "instance is not allowed to have the additional property \"numScoops\"",
+//       ],
+//       "status": 400,
+//     }
+//   });
+// });
+
+// test("test query string min > max", async function () {
+//   const resp = await request(app).get("/companies").query({
+//     nameLike: "c",
+//     minEmployees: 3,
+//     maxEmployees: 2
+//   });
+//   expect(resp.body).toEqual({
+//     "error": {
+//       "message": "minEmployees cannot be greater than maxEmployees",
+//       "status": 400,
+//     },
+//   });
+// });
+
+
+/************************************** GET /companies/:handle */
+
+describe("GET /jobs/id", function () {
+  test("works for anon", async function () {
+    const resp = await request(app).get(`/jobs/1`);
+    expect(resp.body).toEqual({jobs :
+      {
+        id: 1,
+        title: "j1",
+        salary: 100000,
+        equity: "0.5",
+        companyHandle: "c1",
+      }
+    });
+  });
+
+  test("not found for no such company", async function () {
+    const resp = await request(app).get(`/companies/-159`);
+    expect(resp.statusCode).toEqual(404);
+  });
+});
