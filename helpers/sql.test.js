@@ -18,13 +18,5 @@ describe("sqlForPartialUpdate", function () {
     expect(() => sqlForPartialUpdate({}, {})).toThrow("No data");
   });
 });
+// could test 1 and 2 properties
 
-
-
-// describe("sqlForWhereFilter", function () {
-//   test("valid input", function () {
-//     const result = sqlForWhereFilter({ nameLike: "test", maxEmployees: 1000 });
-
-//     expect(result).toEqual('num_employees <= 1000');
-//   });
-// });

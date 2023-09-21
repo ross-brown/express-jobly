@@ -106,7 +106,28 @@ describe("findAll", function () {
     ]);
   });
 
+  test("test query string min > max", async function () {
+    // const resp = await Company.findAll({
+    //   nameLike: "c",
+    //   minEmployees: 3,
+    //   maxEmployees: 2
+    // });
+    expect(async () => await Company.findAll({
+      nameLike: "c",
+      minEmployees: 3,
+      maxEmployees: 2
+    })).rejects.toThrow()
+    // expect(resp.body).toEqual({
+    //   "error": {
+    //     "message": "minEmployees cannot be greater than maxEmployees",
+    //     "status": 400,
+    //   },
+    // });
+  });
 
+// no criteria passed
+// every option is supplied
+// min / max together
 
 
 });

@@ -61,6 +61,9 @@ class Company {
     let whereClauseObj;
 
     if (queryString?.nameLike || queryString?.minEmployees || queryString?.maxEmployees) {
+      if (queryString.minEmployees > queryString.maxEmployees) {
+        throw new BadRequestError("minEmployees cannot be greater than maxEmployees");
+      }
       whereClauseObj = Company.sqlForWhereFilter(queryString);
     }
 
@@ -165,9 +168,7 @@ class Company {
   */
 
   static sqlForWhereFilter(queryString) {
-    if (queryString.minEmployees > queryString.maxEmployees) {
-      throw new BadRequestError("minEmployees cannot be greater than maxEmployees");
-    }
+
 
     const keys = Object.keys(queryString);
 
@@ -179,6 +180,8 @@ class Company {
       } else if (filter === 'maxEmployees') {
         return `num_employees <= $${idx + 1}`;
       }
+      // Colt had empty array for where, separate array for values added at the end
+      // use length of values array to generate $'s
     });
 
     return {

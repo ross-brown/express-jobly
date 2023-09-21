@@ -55,13 +55,9 @@ router.get("/", async function (req, res, next) {
 
   const q = req.query;
 
-  if (q.minEmployees){
-    q.minEmployees = Number(q.minEmployees)
-  }
+  if (q.minEmployees !== undefined) q.minEmployees = +q.minEmployees
+  if (q.maxEmployees !== undefined) q.maxEmployees = +q.maxEmployees
 
-  if (q.maxEmployees){
-    q.maxEmployees = Number(q.maxEmployees)
-  }
   const validator = jsonschema.validate(
     q,
     companyFilterSchema,
