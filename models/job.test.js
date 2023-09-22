@@ -26,6 +26,13 @@ describe("create", function () {
     companyHandle: 'c1'
   };
 
+  const invalidJob = {
+    title: "engineer",
+    salary: 90000,
+    equity: 0,
+    companyHandle: 'sdajkfldhsa'
+  };
+
   test("works", async function () {
     let job = await Job.create(newJob);
     expect(job).toEqual({
@@ -49,6 +56,14 @@ describe("create", function () {
         company_handle: "c1",
       },
     ]);
+  });
+
+  test("invalid company handle", async function () {
+    try {
+      await Job.create(invalidJob);
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
   });
 });
 

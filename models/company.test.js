@@ -154,8 +154,21 @@ describe("findAll", function () {
       },
     ]);
   });
+
+  test("works: with just maxEmployee filter", async function () {
+    const companies = await Company.findAll({ maxEmployees: 1 });
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+    ]);
+  });
 });
-//TODO: could write test specifically for the maxEmployees
+
 /************************************** get */
 
 describe("get", function () {
@@ -168,14 +181,14 @@ describe("get", function () {
       numEmployees: 1,
       logoUrl: "http://c1.img",
       jobs: [{
-        id:1,
-        title:"j1",
+        id: 1,
+        title: "j1",
         salary: 100000,
         equity: "0"
       },
       {
-        id:4,
-        title:"j4",
+        id: 4,
+        title: "j4",
         salary: 9000,
         equity: null
       }]
@@ -317,5 +330,11 @@ describe("sqlForWhereFilter", function () {
     const { filterCols, values } = Company.sqlForWhereFilter({ nameLike: "test!" });
     expect(filterCols).toEqual("WHERE name ILIKE '%' || $1 || '%'");
     expect(values).toEqual(["test!"]);
+  });
+
+  test("works: only maxEmployees", function () {
+    const { filterCols, values } = Company.sqlForWhereFilter({ maxEmployees: 4 });
+    expect(filterCols).toEqual("WHERE num_employees <= $1");
+    expect(values).toEqual([4]);
   });
 });

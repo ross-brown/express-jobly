@@ -113,18 +113,9 @@ class Company {
       WHERE company_handle = $1`,
       [handle]
     );
+    company.jobs = jobsRes.rows;
 
-    const jobs = jobsRes.rows;
-// TODO: return company from line 103, assign propery jobs on company
-    return {
-      handle: company.handle,
-      name: company.name,
-      description: company.description,
-      numEmployees: company.numEmployees,
-      logoUrl: company.logoUrl,
-      jobs: jobs
-
-    };
+    return company;
   }
 
   /** Update company data with `data`.
@@ -196,13 +187,14 @@ class Company {
       if (filter === 'nameLike') {
         return `name ILIKE '%' || $${idx + 1} || '%'`;
       }
+
       if (filter === 'minEmployees') {
         return `num_employees >= $${idx + 1}`;
       }
+
       if (filter === 'maxEmployees') {
         return `num_employees <= $${idx + 1}`;
       }
-
     });
 
     return {

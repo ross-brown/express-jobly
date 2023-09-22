@@ -1,7 +1,7 @@
 "use strict";
 
 const db = require("../db");
-const { NotFoundError } = require("../expressError");
+const { NotFoundError, BadRequestError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for jobs. */
@@ -17,7 +17,15 @@ class Job {
    * */
 
   static async create({ title, salary, equity, companyHandle }) {
-    //TODO: db is last layer of defense, first query for the handle to see if it exists first
+    const handleCheck = await db.query(`
+      SELECT handle
+        FROM companies
+        WHERE handle = $1`, [companyHandle]);
+
+    if (!handleCheck.rows[0]) throw new BadRequestError(
+      `companyHandle ${companyHandle} does not exist`);
+
+
     const result = await db.query(`
                 INSERT INTO jobs (title,
                                        salary,
@@ -47,7 +55,7 @@ class Job {
    * Returns [{ id, title, salary, equity, companyHandle }, ...]
    * */
 
-  static async findAll(queryString={}) {
+  static async findAll(queryString = {}) {
     //TODO: after todo from sqlforwhere, dont need lines 54 - 56 / line 65, be cautious with ?.
     let whereClauseObj;
 
@@ -152,9 +160,8 @@ class Job {
    * Returns {filterCols, values}
    */
 
-  static sqlForWhereFilter(queryString={}) {
-    //TODO: line 175, pass in empty obj, ternary if {} else
-    const keys = Object.keys(queryString)
+  static sqlForWhereFilter(queryString) {
+    const keys = Object.keys(queryString);
     const cols = [];
     const values = [];
 
@@ -171,7 +178,7 @@ class Job {
     }
 
     return {
-      filterCols: "WHERE " + cols.join(" AND "),
+      filterCols: cols.length === 0 ? '' : "WHERE " + cols.join(" AND "),
       values
     };
   }
