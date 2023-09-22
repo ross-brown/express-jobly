@@ -1,9 +1,8 @@
 "use strict";
 
-const { query } = require("express");
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate, sqlForWhereFilter } = require("../helpers/sql");
+const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for companies. */
 
@@ -116,7 +115,7 @@ class Company {
     );
 
     const jobs = jobsRes.rows;
-
+// TODO: return company from line 103, assign propery jobs on company
     return {
       handle: company.handle,
       name: company.name,
@@ -196,11 +195,14 @@ class Company {
     const cols = keys.map((filter, idx) => {
       if (filter === 'nameLike') {
         return `name ILIKE '%' || $${idx + 1} || '%'`;
-      } else if (filter === 'minEmployees') {
+      }
+      if (filter === 'minEmployees') {
         return `num_employees >= $${idx + 1}`;
-      } else if (filter === 'maxEmployees') {
+      }
+      if (filter === 'maxEmployees') {
         return `num_employees <= $${idx + 1}`;
       }
+
     });
 
     return {

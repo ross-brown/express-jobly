@@ -14,7 +14,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM companies");
 
   await db.query(`ALTER SEQUENCE jobs_id_seq RESTART WITH 1;`);
-
+//TODO: cleaner approach, make array of job ids, export out
   await Company.create(
       {
         handle: "c1",

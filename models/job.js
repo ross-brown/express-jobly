@@ -1,8 +1,7 @@
 "use strict";
 
-const { query } = require("express");
 const db = require("../db");
-const { BadRequestError, NotFoundError } = require("../expressError");
+const { NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for jobs. */
@@ -14,10 +13,11 @@ class Job {
    *
    * Returns { id, title, salary, equity, company_handle }
    *
-   * //Think: think about errors??
+   *
    * */
 
   static async create({ title, salary, equity, companyHandle }) {
+    //TODO: db is last layer of defense, first query for the handle to see if it exists first
     const result = await db.query(`
                 INSERT INTO jobs (title,
                                        salary,
@@ -44,17 +44,16 @@ class Job {
   /** Find all jobs with optional filtering from querystring.
    *
    *
-   * Returns [{ id, title, salary, equity, company_handle }, ...]
+   * Returns [{ id, title, salary, equity, companyHandle }, ...]
    * */
 
-  static async findAll(queryString) {
+  static async findAll(queryString={}) {
+    //TODO: after todo from sqlforwhere, dont need lines 54 - 56 / line 65, be cautious with ?.
     let whereClauseObj;
 
     if (queryString?.title || queryString?.minSalary || queryString?.hasEquity) {
       whereClauseObj = Job.sqlForWhereFilter(queryString);
     }
-
-    console.log("WHERE CLAUSE", whereClauseObj);
 
     const jobsRes = await db.query(`
         SELECT id,
@@ -153,7 +152,8 @@ class Job {
    * Returns {filterCols, values}
    */
 
-  static sqlForWhereFilter(queryString) {
+  static sqlForWhereFilter(queryString={}) {
+    //TODO: line 175, pass in empty obj, ternary if {} else
     const keys = Object.keys(queryString)
     const cols = [];
     const values = [];
