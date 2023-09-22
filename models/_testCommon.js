@@ -18,7 +18,8 @@ async function commonBeforeAll() {
       INSERT INTO companies(handle, name, num_employees, description, logo_url)
       VALUES ('c1', 'C1', 1, 'Desc1', 'http://c1.img'),
              ('c2', 'C2', 2, 'Desc2', 'http://c2.img'),
-             ('c3', 'C3', 3, 'Desc3', 'http://c3.img')`);
+             ('c3', 'C3', 3, 'Desc3', 'http://c3.img'),
+             ('c4', 'C4', 3, 'Desc4', 'http://c4.img')`);
 
   await db.query(`
       INSERT INTO users(username,
@@ -40,7 +41,8 @@ async function commonBeforeAll() {
                         company_handle)
       VALUES ('j1', 100000, 0, 'c1'),
              ('j2', 80000, 0.099, 'c2'),
-             ('j3', 70000, NULL, 'c3')
+             ('j3', 70000, NULL, 'c3'),
+             ('j4', 9000, NULL, 'c1')
     `);
 }
 

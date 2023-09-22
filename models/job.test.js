@@ -60,25 +60,32 @@ describe("findAll", function () {
     let jobs = await Job.findAll();
     expect(jobs).toEqual([
       {
-        id: expect.any(Number),
+        id: 1,
         title: "j1",
         salary: 100000,
         equity: "0",
         companyHandle: "c1",
       },
       {
-        id: expect.any(Number),
+        id: 2,
         title: "j2",
         salary: 80000,
         equity: "0.099",
         companyHandle: "c2",
       },
       {
-        id: expect.any(Number),
+        id: 3,
         title: "j3",
         salary: 70000,
         equity: null,
         companyHandle: "c3",
+      },
+      {
+        id: 4,
+        title: "j4",
+        salary: 9000,
+        equity: null,
+        companyHandle: "c1",
       },
     ]);
   });

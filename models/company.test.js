@@ -83,6 +83,13 @@ describe("findAll", function () {
         numEmployees: 3,
         logoUrl: "http://c3.img",
       },
+      {
+        handle: "c4",
+        name: "C4",
+        description: "Desc4",
+        numEmployees: 3,
+        logoUrl: "http://c4.img",
+      },
     ]);
   });
 
@@ -102,6 +109,13 @@ describe("findAll", function () {
         description: "Desc3",
         numEmployees: 3,
         logoUrl: "http://c3.img",
+      },
+      {
+        handle: "c4",
+        name: "C4",
+        description: "Desc4",
+        numEmployees: 3,
+        logoUrl: "http://c4.img",
       },
     ]);
   });
@@ -131,6 +145,13 @@ describe("findAll", function () {
         numEmployees: 3,
         logoUrl: "http://c3.img",
       },
+      {
+        handle: "c4",
+        name: "C4",
+        description: "Desc4",
+        numEmployees: 3,
+        logoUrl: "http://c4.img",
+      },
     ]);
   });
 });
@@ -138,7 +159,7 @@ describe("findAll", function () {
 /************************************** get */
 
 describe("get", function () {
-  test("works", async function () {
+  test("works companies w/jobs", async function () {
     let company = await Company.get("c1");
     expect(company).toEqual({
       handle: "c1",
@@ -151,7 +172,25 @@ describe("get", function () {
         title:"j1",
         salary: 100000,
         equity: "0"
+      },
+      {
+        id:4,
+        title:"j4",
+        salary: 9000,
+        equity: null
       }]
+    });
+  });
+
+  test("works company wo/jobs", async function () {
+    let company = await Company.get("c4");
+    expect(company).toEqual({
+      handle: "c4",
+      name: "C4",
+      description: "Desc4",
+      numEmployees: 3,
+      logoUrl: "http://c4.img",
+      jobs: []
     });
   });
 
