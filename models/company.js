@@ -98,8 +98,6 @@ class Company {
       WHERE handle = $1`,
       [handle]
     );
-
-
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
